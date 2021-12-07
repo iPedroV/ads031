@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Button,
   StyleSheet,
@@ -8,9 +8,13 @@ import {
   Image,
   TouchableOpacity,
   Text,
+  Platform
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { UserContext } from '../context/UserContext';
+import firebase from 'firebase' ;
+import DatePicker from 'react-native-datepicker';
+
 
 export default function DetailVenda2({
   navigation: { goBack },
@@ -20,11 +24,37 @@ export default function DetailVenda2({
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [usuario, setUsuario] = useContext(UserContext);
+  const [data, setData] = useState('');
+
+ const date = new Date().getDate(); //Current Date
+  const month = new Date().getMonth() + 1; //Current Month
+  const year = new Date().getFullYear(); //Current Year
+  const baseDate = date + '/' + month + '/' + year;
 
   const pressAnnouncement = () => {
     navigation.navigate('proposta');
   };
+  const sair = () => {
+    setUsuario({logado: false})
+  }
 
+  const pressFavoriteBuySave = () => {
+    firebase.firestore().collection('favoritosCompra').add({
+      inicialAviao:'ATR',
+      modeloAviao:'72',
+      valor:'R$ 26.800.000,00',
+      capacidade:'72 passageiros',
+      autonomia:'1.500 km',
+      velocidade:'511 km/h',
+      pesoVazio:'13.010 kg',
+      pesoMaximo:'22.800 kg',
+      horasVoo:'76.650 h',
+      tipoServico:'compra',
+      dataInicial: data === '' ? baseDate : data,
+      dataFinal: ''
+    })
+    navigation.navigate('favoritos');
+  };
   return (
     <ImageBackground
       style={styles.back}
@@ -38,6 +68,12 @@ export default function DetailVenda2({
           />
         </TouchableOpacity>
         <Text style={styles.textoVoltar}>Voltar</Text>
+        <TouchableOpacity onPress={sair}>
+         <Image
+            source={require('../assets/exit.png')}
+            style={{ width: 30, height: 30, marginTop: 3, marginLeft: 165 }}
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <View style={styles.box}>
@@ -57,6 +93,18 @@ export default function DetailVenda2({
           <Text style={styles.textDetail}>Peso Vazio: 13.010 kg</Text>
           <Text style={styles.textDetail}>Peso Máximo: 22.800 kg</Text>
           <Text style={styles.textDetail}>Horas de Vôo: 76.650 h</Text>
+          <Text style={styles.textDetail}>Data de pretenção de compra:</Text>
+          <TextInput
+            style={styles.boxData}
+            placeholder={baseDate}
+            autoCorrect={false}
+            onChangeText={(data) => setData(data)}
+          />
+          <TouchableOpacity
+            style={styles.buttonFavorite}
+            onPress={() => pressFavoriteBuySave()}>
+            <Text style={styles.textButtonFavorite}>Adicionar Aos Favoritos</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.containerButton}>
           <TouchableOpacity
@@ -164,4 +212,41 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     margin: 10,
   },
+  textData: {
+    height: 30,
+    color: '#3b3838',
+    fontSize: 15,
+    fontWeight: 'normal',
+    paddingLeft: 10,
+    marginBottom: 10,
+  },
+    buttonFavorite: {
+    backgroundColor: '#005A8E',
+    width: '50%',
+    height: 25,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+   textButtonFavorite: {
+    color: '#fff',
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+   boxData: {
+    marginLeft: 10,
+    backgroundColor: '#fff',
+    width: 100,
+    marginBottom: 15,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: '#005A8E',
+    borderRadius: 10,
+    padding: 10,
+  },
+
 });

@@ -8,6 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Home from './Home'
+import Favoritos from './Favoritos'
 import Search from './Search'
 import Search2 from './Search2'
 import Search3 from './Search3'
@@ -67,7 +68,19 @@ export default function Menu({navigation}) {
                   color={'#005A8E'}
                 />
               );
-            } 
+            } else if (route.name === 'Favoritos') {
+              return (
+                <Ionicons
+                  name={
+                    focused
+                      ? 'star'
+                      : 'star-outline'
+                  }
+                  size={size}
+                  color={'#005A8E'}
+                />
+              );
+            }
           },
           tabBarInactiveTintColor: 'gray',
           tabBarActiveTintColor: '#005A8E',
@@ -76,6 +89,7 @@ export default function Menu({navigation}) {
         <Tab.Screen name="Home" component={Home} options={{headerShown: false}}/>
         <Tab.Screen name="Search" component={Search} options={{headerShown: false}}/> 
         <Tab.Screen name="News" component={News} options={{headerShown: false}}/>
+        <Tab.Screen name="Favoritos" component={Favoritos} options={{headerShown: false}}/>
       </Tab.Navigator>
   );
 }

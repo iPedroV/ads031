@@ -23,6 +23,10 @@ export default function Search({ navigation, logado }) {
     navigation.navigate('AnuncioVenda');
   };
 
+  const sair = () => {
+    setUsuario({logado: false})
+  }
+
   return (
     <ImageBackground
       style={styles.back}
@@ -78,7 +82,7 @@ const styles = StyleSheet.create({
     lineHeight: 27,
     color: '#FFFFFF',
     marginLeft: 50,
-    marginTop: -30
+    marginTop: -35
   },
   textSecondary: {
     textAlign: 'left',

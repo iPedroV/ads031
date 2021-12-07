@@ -36,6 +36,10 @@ export default function Home({ navigation, logado }) {
     navigation.navigate('news3');
   };
 
+  const sair = () => {
+    setUsuario({logado: false})
+  }
+
   return (
     <ImageBackground
       style={styles.back}
@@ -58,6 +62,14 @@ export default function Home({ navigation, logado }) {
           />
         </TouchableOpacity>
       </View>
+      <View style={styles.containerButton}>
+          <TouchableOpacity 
+            style={styles.button}
+            onPress={sair}
+          >
+            <Text style={styles.textButton}>Sair</Text>
+          </TouchableOpacity>
+        </View>
       <View style={styles.container2}>
         <TouchableOpacity onPress={() => pressBuy()}>
           <View style={styles.box}>
@@ -111,7 +123,7 @@ const styles = StyleSheet.create({
   },
   container2: {
     flex: 1,
-    paddingTop: 110,
+    paddingTop: 5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -200,5 +212,25 @@ const styles = StyleSheet.create({
     fontSize: 17,
 
     color: '#000',
+  },
+  textButton: {
+    color: '#fff',
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  button: {
+    backgroundColor: '#005A8E',
+    width: '60%',
+    height: 33,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    marginTop: 15
+  },
+  containerButton:{
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '25%'
   },
 });

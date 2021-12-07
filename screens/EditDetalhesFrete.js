@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Button,
   StyleSheet,
@@ -8,59 +8,102 @@ import {
   Image,
   TouchableOpacity,
   Text,
+  Platform,
 } from 'react-native';
-import { Icon } from 'react-native-elements';
+
+import Favoritos from './Favoritos';
 import { UserContext } from '../context/UserContext';
 import firebase from 'firebase';
+import DatePicker from 'react-native-datepicker';
 
-
-export default function DetailAluga1({
+export default function EditDetalhesFrete({
   navigation: { goBack },
   navigation,
   logado,
+  route,
 }) {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
   const [usuario, setUsuario] = useContext(UserContext);
-
-  const [dataComeco, setDataComeco] = useState('');
+  const { id } = route.params;
+  const [inicialAviao, setInicialAviao] = useState('');
+  const [modeloAviao, setModeloAviao] = useState('');
+  const [valor, setValor] = useState('');
+  const [capacidade, setCapacidade] = useState('');
+  const [autonomia, setAutonomia] = useState('');
+  const [velocidade, setVelocidade] = useState('');
+  const [pesoVazio, setPesoVazio] = useState('');
+  const [pesoMaximo, setPesoMaximo] = useState('');
+  const [horasVoo, setHorasVoo] = useState('');
+  const [tipoServico, setTipoServico] = useState('');
+  const [dataInicial, setDataInicial] = useState('');
   const [dataFinal, setDataFinal] = useState('');
-
 
   const date = new Date().getDate(); //Current Date
   const month = new Date().getMonth() + 1; //Current Month
   const year = new Date().getFullYear(); //Current Year
   const baseDate = date + '/' + month + '/' + year;
 
-  const pressFavoriteBuySave = () => {
-    firebase
-      .firestore()
-      .collection('favoritosAluguel')
-      .add({
-        inicialAviao: 'Cessna',
-        modeloAviao: '172 Skyhawk',
-        valor: 'R$ 2.419,00',
-        capacidade: '3 passageiros',
-        autonomia: '1.289 km',
-        velocidade: '226 km/h',
-        pesoVazio: '767 kg',
-        pesoMaximo: '1.111 kg',
-        horasVoo: '29.131 h',
-        tipoServico: 'aluguel',
-        dataInicial: dataComeco === '' ? baseDate : dataComeco,
-        dataFinal: dataFinal === '' ? baseDate : dataFinal,
-      });
+  const pressionaApagar = () => {
+    const docRef = firebase.firestore().collection('favoritosFrete').doc(id);
+    docRef.delete();
     navigation.navigate('favoritos');
   };
 
-  const pressAnnouncement = () => {
-    navigation.navigate('proposta');
+  const pressionaTeste = () => {
+    console.log({ inicialAviao });
   };
 
-  const sair = () => {
-    setUsuario({logado: false})
-  }
-  
+  useEffect(() => {
+    (async () => {
+      const docRef = firebase.firestore().collection('favoritosFrete').doc(id);
+      const doc = await docRef.get();
+      const {
+        inicialAviao,
+        modeloAviao,
+        valor,
+        capacidade,
+        autonomia,
+        velocidade,
+        pesoVazio,
+        pesoMaximo,
+        horasVoo,
+        tipoServico,
+        dataInicial,
+        dataFinal,
+      } = doc.data();
+      setInicialAviao(inicialAviao);
+      setModeloAviao(modeloAviao);
+      setValor(valor);
+      setCapacidade(capacidade);
+      setAutonomia(autonomia);
+      setVelocidade(velocidade);
+      setPesoVazio(pesoVazio);
+      setPesoMaximo(pesoMaximo);
+      setHorasVoo(horasVoo);
+      setTipoServico(tipoServico);
+      setDataInicial(dataInicial === '' ? baseDate : dataInicial);
+      setDataFinal(dataFinal);
+    })();
+  }, []);
+
+  const pressionaSalvar = () => {
+    const docRef = firebase.firestore().collection('favoritosFrete').doc(id);
+    docRef.set({
+      inicialAviao: inicialAviao,
+      modeloAviao: modeloAviao,
+      valor: valor,
+      capacidade: capacidade,
+      autonomia: autonomia,
+      velocidade: velocidade,
+      pesoVazio: pesoVazio,
+      pesoMaximo: pesoMaximo,
+      horasVoo: horasVoo,
+      tipoServico: tipoServico,
+      dataInicial: dataInicial,
+      dataFinal: dataFinal,
+    });
+    navigation.navigate('favoritos');
+  };
+
   return (
     <ImageBackground
       style={styles.back}
@@ -74,58 +117,38 @@ export default function DetailAluga1({
           />
         </TouchableOpacity>
         <Text style={styles.textoVoltar}>Voltar</Text>
-        <TouchableOpacity onPress={sair}>
-         <Image
-            source={require('../assets/exit.png')}
-            style={{ width: 30, height: 30, marginTop: 3, marginLeft: 165 }}
-          />
-        </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <View style={styles.box}>
-          <Image
-            style={styles.logo2}
-            source={require('../assets/Cessna-172-Skyhawk.jpg')}
-          />
           <View style={styles.container2}>
-            <Text style={styles.textContainer}>Cessna</Text>
-            <Text style={styles.textContainer2}>172 Skyhawk</Text>
+            <Text style={styles.textContainer}>{inicialAviao}</Text>
+            <Text style={styles.textContainer2}>{modeloAviao}</Text>
           </View>
-          <Text style={styles.textContainer3}>R$ 2.419,00</Text>
+          <Text style={styles.textContainer3}>{valor}</Text>
           <View style={styles.lineStyle} />
-          <Text style={styles.textDetail}>Capacidade: 3 passageiros</Text>
-          <Text style={styles.textDetail}>Autonomia: 1.289 Km</Text>
-          <Text style={styles.textDetail}>Velocidade: 226 Km/h</Text>
-          <Text style={styles.textDetail}>Peso Vazio: 767 kg</Text>
-          <Text style={styles.textDetail}>Peso Máximo: 1.111 kg</Text>
-          <Text style={styles.textDetail}>Horas de Vôo: 29.131 h</Text>
-          <Text style={styles.textDetail}>Data empréstimo:</Text>
+          <Text style={styles.textDetail}>Capacidade: {capacidade}</Text>
+          <Text style={styles.textDetail}>Autonomia: {autonomia}</Text>
+          <Text style={styles.textDetail}>Velocidade: {velocidade}</Text>
+          <Text style={styles.textDetail}>Peso Vazio: {pesoVazio}</Text>
+          <Text style={styles.textDetail}>Peso Máximo: {pesoMaximo}</Text>
+          <Text style={styles.textDetail}>Horas de Vôo: {horasVoo}</Text>
+          <Text style={styles.textDetail}>Data de pretenção de compra: </Text>
           <TextInput
             style={styles.boxData}
             placeholder={baseDate}
             autoCorrect={false}
-            onChangeText={(dataComeco) => setDataComeco(dataComeco)}
-          />
-          <Text style={styles.textDetail}>Data devolução:</Text>
-          <TextInput
-            style={styles.boxData}
-            placeholder={baseDate}
-            autoCorrect={false}
-            onChangeText={(dataFinal) => setDataFinal(dataFinal)}
+            value={dataInicial}
+            onChangeText={(dataInicial) => setDataInicial(dataInicial)}
           />
           <TouchableOpacity
             style={styles.buttonFavorite}
-            onPress={() => pressFavoriteBuySave()}>
-            <Text style={styles.textButtonFavorite}>
-              Adicionar Aos Favoritos
-            </Text>
+            onPress={() => pressionaSalvar()}>
+            <Text style={styles.textButtonFavorite}>Salvar</Text>
           </TouchableOpacity>
-        </View>
-        <View style={styles.containerButton}>
           <TouchableOpacity
-            style={styles.button}
-            onPress={() => pressAnnouncement()}>
-            <Text style={styles.textButton}>Enviar mensagem</Text>
+            style={styles.buttonFavorite}
+            onPress={() => pressionaApagar()}>
+            <Text style={styles.textButtonFavorite}>Excluir</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -153,23 +176,22 @@ const styles = StyleSheet.create({
   },
   textoVoltar: {
     fontSize: 30,
-    fontWeight: "bold"
+    fontWeight: 'bold',
   },
   box: {
     width: 'auto',
     height: 'auto',
     backgroundColor: '#FFF',
-
     margin: 10,
     borderRadius: 15,
   },
   textContainer: {
     width: 'auto',
     height: 30,
-    marginTop: -10,
     fontSize: 20,
     fontWeight: 'bold',
     paddingLeft: 10,
+    marginTop: 10,
   },
   textContainer2: {
     width: 'auto',
@@ -177,8 +199,8 @@ const styles = StyleSheet.create({
     color: '#d10816',
     fontSize: 20,
     fontWeight: 'bold',
-    marginTop: -10,
     paddingLeft: 10,
+    marginTop: 10,
   },
   textContainer3: {
     width: 'auto',
@@ -196,6 +218,14 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     paddingLeft: 10,
   },
+  textData: {
+    height: 30,
+    color: '#3b3838',
+    fontSize: 15,
+    fontWeight: 'normal',
+    paddingLeft: 10,
+    marginBottom: 10,
+  },
   lineStyle: {
     borderWidth: 1,
     borderColor: 'black',
@@ -204,7 +234,7 @@ const styles = StyleSheet.create({
   containerButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: '5%',
+    marginTop: '15%',
   },
   button: {
     backgroundColor: '#005A8E',
@@ -227,7 +257,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     margin: 10,
   },
-   buttonFavorite: {
+  buttonFavorite: {
     backgroundColor: '#005A8E',
     width: '50%',
     height: 25,

@@ -29,6 +29,10 @@ export default function AnuncioVenda({ navigation: { goBack }, navigation, logad
     navigation.navigate('DetailVenda2');
   };
 
+  const sair = () => {
+    setUsuario({logado: false})
+  }
+
   return (
     <ImageBackground
       style={styles.back}
@@ -36,25 +40,30 @@ export default function AnuncioVenda({ navigation: { goBack }, navigation, logad
       source={require('../assets/backapp.png')}>
       <View style={styles.container3}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image
+         <Image
             source={require('../assets/back-arrow.png')}
             style={{ width: 30, height: 30, marginTop: 3 }}
           />
         </TouchableOpacity>
         <Text style={styles.textoVoltar}>Pesquisa</Text>
+        <TouchableOpacity onPress={sair}>
+         <Image
+            source={require('../assets/exit.png')}
+            style={{ width: 30, height: 30, marginTop: 3, marginLeft: 165 }}
+          />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.container1}>
         <View style={styles.box}>
           <TouchableOpacity onPress={() => pressSold1()}>
-            <Image
+           <Image
               style={styles.logo2}
               source={require('../assets/319.png')}
               resizeMode="cover"
             />
           </TouchableOpacity>
-            
-            <View style={styles.container1}>
+            <View style={styles.container4}>
               <Text style={styles.textContainer}>AIRBUS</Text>
               <Text style={styles.textContainer2}>A319</Text>
             </View>
@@ -62,19 +71,19 @@ export default function AnuncioVenda({ navigation: { goBack }, navigation, logad
             <Text style={styles.textDetail}>Autonomia: 6.700 Km</Text>
             <Text style={styles.textDetail}>Velocidade: 871 Km/h</Text>
             <Text style={styles.textContainer3}>R$ 90.500.000,00</Text>
-          </View>
+        </View>
       </View>
       <View style={styles.container2}>
         <View style={styles.box}>
           <TouchableOpacity onPress={() => pressSold2()}>
-            <Image
+          <Image
               style={styles.logo2}
               source={require('../assets/72.png')}
               resizeMode="cover"
             />
           </TouchableOpacity>
             
-            <View style={styles.container1}>
+            <View style={styles.container4}>
             <Text style={styles.textContainer}>ATR</Text>
             <Text style={styles.textContainer2}>72</Text>
           </View>
@@ -89,20 +98,24 @@ export default function AnuncioVenda({ navigation: { goBack }, navigation, logad
 }
 
 const styles = StyleSheet.create({
-    back: {
+  back: {
     flex: 1,
   },
   container1: {
     flex: 1,
-    flexDirection: 'row',
-    margin: 10,
-    paddingLeft: 10
+    paddingLeft: 10,
+    paddingRight: 15,
+    paddingTop: 20,
   },
   container2: {
     flex: 1,
+    paddingLeft: 10,
+    paddingRight: 15,
+    paddingTop: 20,
+  },
+  container4: {
+    flex: 1,
     flexDirection: 'row',
-    margin: 10,
-    paddingLeft: 10
   },
   container3: {
     backgroundColor: '#fff',
@@ -113,8 +126,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold"
   },
   box: {
-     width: '90%',
-    height: '100%',
+    width: '100%',
+    height: '90%',
     backgroundColor: '#FFF',
     margin: 10,
     borderRadius: 15,
@@ -125,7 +138,7 @@ const styles = StyleSheet.create({
     marginTop: -10,
     fontSize: 20,
     fontWeight: 'bold',
-    
+    paddingLeft: 10,
     fontFamily: 'Poppins_400Regular',
     fontStyle: 'normal',
   },
@@ -146,12 +159,9 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 20,
     fontWeight: 'bold',
-    
+    paddingLeft: 110,
     fontFamily: 'Poppins_400Regular',
     fontStyle: 'normal',
-    paddingRight: 10,
-    
-    textAlign: "right"
     
   },
   textDetail: {
@@ -160,12 +170,12 @@ const styles = StyleSheet.create({
     color: '#3b3838',
     fontSize: 12,
     fontWeight: 'normal',
-    paddingLeft: 20,
+    paddingLeft: 10,
   },
   logo2: {
     flex: 1,
     width: 'auto',
-    height: 150,
+    height: 200,
     borderRadius: 15,
     margin: 10,
   },

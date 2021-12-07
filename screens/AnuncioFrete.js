@@ -29,6 +29,10 @@ export default function AnuncioFrete({ navigation: { goBack }, navigation, logad
     navigation.navigate('DetailFrete2');
   };
 
+  const sair = () => {
+    setUsuario({logado: false})
+  }
+
   return (
     <ImageBackground
       style={styles.back}
@@ -42,6 +46,12 @@ export default function AnuncioFrete({ navigation: { goBack }, navigation, logad
           />
         </TouchableOpacity>
         <Text style={styles.textoVoltar}>Pesquisa</Text>
+        <TouchableOpacity onPress={sair}>
+         <Image
+            source={require('../assets/exit.png')}
+            style={{ width: 30, height: 30, marginTop: 3, marginLeft: 165 }}
+          />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.container1}>

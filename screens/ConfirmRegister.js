@@ -7,6 +7,7 @@ export default function ConfirmRegister({ navigation, logado }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [usuario, setUsuario] = useContext(UserContext);
+  
 
   const pressReturn = () => {
     navigation.navigate('login');

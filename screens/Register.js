@@ -1,14 +1,25 @@
 import React, { useState, useContext } from 'react';
 import { Button, StyleSheet, TextInput, View, ImageBackground, Image, TouchableOpacity, Text } from 'react-native';
+import firebase from 'firebase';
 
 import { UserContext } from '../context/UserContext';
 
 export default function Register({ navigation, logado }) {
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [confirme, setConfirme] = useState('');
   const [usuario, setUsuario] = useContext(UserContext);
 
   const pressRegister = () => {
+     firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, senha)
+      .then((userCredential) => {
+        setUsuario({ logado: true, nome: nome });
+        return userCredential.user.updateProfile({ displayName: nome });
+      })
+      .catch((error) => alert(error.message));
     navigation.navigate('confirmRegister');
   };
 
@@ -28,7 +39,7 @@ export default function Register({ navigation, logado }) {
           //keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
-          onChangeText={() => {}}
+          onChangeText={(text) => setNome(text)}
         />
         <Text style={ styles.textLogin }>E-mail:</Text>
         <TextInput 
@@ -37,7 +48,7 @@ export default function Register({ navigation, logado }) {
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
-          onChangeText={() => {}}
+          onChangeText={(text) => setEmail(text)}
         />
         <Text style={ styles.textLogin }>Senha:</Text>
         <TextInput 
@@ -46,16 +57,16 @@ export default function Register({ navigation, logado }) {
           keyboardType="number-pad"
           secureTextEntry={true}
           autoCorrect={false}
-          onChangeText={() => {}}
+          onChangeText={(text) => setSenha(text)}
         />
         <Text style={ styles.textLogin }>Confirme sua senha:</Text>
         <TextInput 
           style={styles.boxLogin}
-          placeholder="Comfirme"
+          placeholder="Confirme"
           keyboardType="number-pad"
           secureTextEntry={true}
           autoCorrect={false}
-          onChangeText={() => {}}
+          onChangeText={(text) => setConfirme(text)}
         />
         <View style={styles.containerButton}>
           <TouchableOpacity 

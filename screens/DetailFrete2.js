@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { UserContext } from '../context/UserContext';
+import firebase from 'firebase';
+
 
 export default function DetailFrete2({
   navigation: { goBack },
@@ -21,9 +23,45 @@ export default function DetailFrete2({
   const [senha, setSenha] = useState('');
   const [usuario, setUsuario] = useContext(UserContext);
 
+   const [data, setData] = useState('');
+
+  const date = new Date().getDate(); //Current Date
+  const month = new Date().getMonth() + 1; //Current Month
+  const year = new Date().getFullYear(); //Current Year
+  const baseDate = date + '/' + month + '/' + year;
+
+  const pressFavoriteBuySave = () => {
+    firebase
+      .firestore()
+      .collection('favoritosFrete')
+      .add({
+        inicialAviao: 'Boeing',
+        modeloAviao: '737-200 ',
+        valor: 'R$ 12.760,00',
+        capacidade: '136 passageiros',
+        autonomia: '3.500 km',
+        velocidade: '800 km/h',
+        pesoVazio: '43.091 kg',
+        pesoMaximo: '58.105 kg',
+        horasVoo: '280.105 h',
+        tipoServico: 'frete',
+        dataInicial: data === '' ? baseDate : data,
+        dataFinal: '',
+      });
+    navigation.navigate('favoritos');
+  };
+
   const pressAnnouncement = () => {
     navigation.navigate('proposta');
   };
+
+  function onDateChange(value) {
+    setData(value);
+  }
+
+  const sair = () => {
+    setUsuario({logado: false})
+  }
 
   return (
     <ImageBackground
@@ -38,6 +76,12 @@ export default function DetailFrete2({
           />
         </TouchableOpacity>
         <Text style={styles.textoVoltar}>Voltar</Text>
+        <TouchableOpacity onPress={sair}>
+         <Image
+            source={require('../assets/exit.png')}
+            style={{ width: 30, height: 30, marginTop: 3, marginLeft: 165 }}
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <View style={styles.box}>
@@ -57,6 +101,20 @@ export default function DetailFrete2({
           <Text style={styles.textDetail}>Peso Vazio: 43.091 kg</Text>
           <Text style={styles.textDetail}>Peso Máximo: 58.105 kg</Text>
           <Text style={styles.textDetail}>Horas de Vôo: 280.650 h</Text>
+          <Text style={styles.textDetail}>Data de pretenção para Frete:</Text>
+          <TextInput
+            style={styles.boxData}
+            placeholder={baseDate}
+            autoCorrect={false}
+            onChangeText={(data) => setData(data)}
+          />
+          <TouchableOpacity
+            style={styles.buttonFavorite}
+            onPress={() => pressFavoriteBuySave()}>
+            <Text style={styles.textButtonFavorite}>
+              Adicionar Aos Favoritos
+            </Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.containerButton}>
           <TouchableOpacity
@@ -163,5 +221,33 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 15,
     margin: 10,
+  },
+  buttonFavorite: {
+    backgroundColor: '#005A8E',
+    width: '50%',
+    height: 25,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  textButtonFavorite: {
+    color: '#fff',
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  boxData: {
+    marginLeft: 10,
+    backgroundColor: '#fff',
+    width: 100,
+    marginBottom: 15,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: '#005A8E',
+    borderRadius: 10,
+    padding: 10,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Button,
   StyleSheet,
@@ -8,18 +8,62 @@ import {
   Image,
   TouchableOpacity,
   Text,
+  Platform,
 } from 'react-native';
 
+import Favoritos from './Favoritos';
 import { UserContext } from '../context/UserContext';
+import firebase from 'firebase';
+import DatePicker from 'react-native-datepicker';
 
-export default function DetailVenda1({ navigation: { goBack }, navigation, logado }) {
+export default function DetailVenda1({
+  navigation: { goBack },
+  navigation,
+  logado,
+}) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [usuario, setUsuario] = useContext(UserContext);
 
+  const [data, setData] = useState('');
+
+ const date = new Date().getDate(); //Current Date
+  const month = new Date().getMonth() + 1; //Current Month
+  const year = new Date().getFullYear(); //Current Year
+  const baseDate = date + '/' + month + '/' + year;
+
+  const pressFavoriteBuySave = () => {
+    firebase
+      .firestore()
+      .collection('favoritosCompra')
+      .add({
+        inicialAviao: 'AIRBUS',
+        modeloAviao: 'A319',
+        valor: 'R$ 90.500.000,00',
+        capacidade: '166 passageiros',
+        autonomia: '6.700 km',
+        velocidade: '871 km/h',
+        pesoVazio: '40.800 kg',
+        pesoMaximo: '75.500 kg',
+        horasVoo: '583.570 h',
+        tipoServico: 'compra',
+        dataInicial: data === '' ? baseDate : data,
+        dataFinal: '',
+      });
+    navigation.navigate('favoritos');
+  };
+
   const pressAnnouncement = () => {
     navigation.navigate('proposta');
   };
+
+  function onDateChange(value) {
+    setData(value);
+  }
+
+  const sair = () => {
+    setUsuario({logado: false})
+  }
 
   return (
     <ImageBackground
@@ -34,10 +78,19 @@ export default function DetailVenda1({ navigation: { goBack }, navigation, logad
           />
         </TouchableOpacity>
         <Text style={styles.textoVoltar}>Voltar</Text>
+        <TouchableOpacity onPress={sair}>
+         <Image
+            source={require('../assets/exit.png')}
+            style={{ width: 30, height: 30, marginTop: 3, marginLeft: 165 }}
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <View style={styles.box}>
-          <Image style={styles.logo2} source={require('../assets/A319-1.jpg')} />
+          <Image
+            style={styles.logo2}
+            source={require('../assets/A319-1.jpg')}
+          />
           <View style={styles.container2}>
             <Text style={styles.textContainer}>AIRBUS</Text>
             <Text style={styles.textContainer2}>A319</Text>
@@ -50,6 +103,20 @@ export default function DetailVenda1({ navigation: { goBack }, navigation, logad
           <Text style={styles.textDetail}>Peso Vazio: 40.800 kg</Text>
           <Text style={styles.textDetail}>Peso Máximo: 75.500 kg</Text>
           <Text style={styles.textDetail}>Horas de Vôo: 583.570 h</Text>
+          <Text style={styles.textDetail}>Data de pretenção de compra:</Text>
+          <TextInput
+            style={styles.boxData}
+            placeholder={baseDate}
+            autoCorrect={false}
+            onChangeText={(data) => setData(data)}
+          />
+          <TouchableOpacity
+            style={styles.buttonFavorite}
+            onPress={() => pressFavoriteBuySave()}>
+            <Text style={styles.textButtonFavorite}>
+              Adicionar Aos Favoritos
+            </Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.containerButton}>
           <TouchableOpacity
@@ -83,7 +150,7 @@ const styles = StyleSheet.create({
   },
   textoVoltar: {
     fontSize: 30,
-    fontWeight: "bold"
+    fontWeight: 'bold',
   },
   box: {
     width: 'auto',
@@ -126,6 +193,14 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     paddingLeft: 10,
   },
+  textData: {
+    height: 30,
+    color: '#3b3838',
+    fontSize: 15,
+    fontWeight: 'normal',
+    paddingLeft: 10,
+    marginBottom: 10,
+  },
   lineStyle: {
     borderWidth: 1,
     borderColor: 'black',
@@ -156,5 +231,33 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 15,
     margin: 10,
+  },
+  buttonFavorite: {
+    backgroundColor: '#005A8E',
+    width: '50%',
+    height: 25,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  textButtonFavorite: {
+    color: '#fff',
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  boxData: {
+    marginLeft: 10,
+    backgroundColor: '#fff',
+    width: 100,
+    marginBottom: 15,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: '#005A8E',
+    borderRadius: 10,
+    padding: 10,
   },
 });

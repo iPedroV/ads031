@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { UserContext } from '../context/UserContext';
+import firebase from 'firebase';
+
 
 export default function DetailAluga2({
   navigation: { goBack },
@@ -21,9 +23,44 @@ export default function DetailAluga2({
   const [senha, setSenha] = useState('');
   const [usuario, setUsuario] = useContext(UserContext);
 
+   const [dataComeco, setDataComeco] = useState('');
+  const [dataFinal, setDataFinal] = useState('');
+
+
+  const date = new Date().getDate(); //Current Date
+  const month = new Date().getMonth() + 1; //Current Month
+  const year = new Date().getFullYear(); //Current Year
+  const baseDate = date + '/' + month + '/' + year;
+
+  const pressFavoriteBuySave = () => {
+    firebase
+      .firestore()
+      .collection('favoritosAluguel')
+      .add({
+        inicialAviao: 'BAE',
+        modeloAviao: '146-300',
+        valor: 'R$ 96.800,00',
+        capacidade: '112 passageiros',
+        autonomia: '2.965 km',
+        velocidade: '740 km/h',
+        pesoVazio: '23.987 kg',
+        pesoMaximo: '44.225 kg',
+        horasVoo: '219.410 h',
+        tipoServico: 'aluguel',
+        dataInicial: dataComeco === '' ? baseDate : dataComeco,
+        dataFinal: dataFinal === '' ? baseDate : dataFinal,
+      });
+    navigation.navigate('favoritos');
+  };
+
   const pressAnnouncement = () => {
     navigation.navigate('proposta');
   };
+  
+
+  const sair = () => {
+    setUsuario({logado: false})
+  }
 
   return (
     <ImageBackground
@@ -38,6 +75,12 @@ export default function DetailAluga2({
           />
         </TouchableOpacity>
         <Text style={styles.textoVoltar}>Voltar</Text>
+        <TouchableOpacity onPress={sair}>
+         <Image
+            source={require('../assets/exit.png')}
+            style={{ width: 30, height: 30, marginTop: 3, marginLeft: 165 }}
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <View style={styles.box}>
@@ -57,6 +100,27 @@ export default function DetailAluga2({
           <Text style={styles.textDetail}>Peso Vazio: 23.897 kg</Text>
           <Text style={styles.textDetail}>Peso Máximo: 44.225 kg</Text>
           <Text style={styles.textDetail}>Horas de Vôo: 219.410 h</Text>
+           <Text style={styles.textDetail}>Data empréstimo:</Text>
+          <TextInput
+            style={styles.boxData}
+            placeholder={baseDate}
+            autoCorrect={false}
+            onChangeText={(dataComeco) => setDataComeco(dataComeco)}
+          />
+          <Text style={styles.textDetail}>Data devolução:</Text>
+          <TextInput
+            style={styles.boxData}
+            placeholder={baseDate}
+            autoCorrect={false}
+            onChangeText={(dataFinal) => setDataFinal(dataFinal)}
+          />
+          <TouchableOpacity
+            style={styles.buttonFavorite}
+            onPress={() => pressFavoriteBuySave()}>
+            <Text style={styles.textButtonFavorite}>
+              Adicionar Aos Favoritos
+            </Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.containerButton}>
           <TouchableOpacity
@@ -141,7 +205,7 @@ const styles = StyleSheet.create({
   containerButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: '15%',
+    marginTop: '5%',
   },
   button: {
     backgroundColor: '#005A8E',
@@ -163,5 +227,33 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 15,
     margin: 10,
+  },
+   buttonFavorite: {
+    backgroundColor: '#005A8E',
+    width: '50%',
+    height: 25,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  textButtonFavorite: {
+    color: '#fff',
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  boxData: {
+    marginLeft: 10,
+    backgroundColor: '#fff',
+    width: 100,
+    marginBottom: 15,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: '#005A8E',
+    borderRadius: 10,
+    padding: 10,
   },
 });

@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Button, StyleSheet, TextInput, View, ImageBackground, Image, TouchableOpacity, Text, Animated } from 'react-native';
+import firebase from 'firebase';
 
 import { UserContext } from '../context/UserContext';
 
@@ -12,7 +13,15 @@ export default function Login({ navigation, logado }) {
   const [opacity] = useState(new Animated.Value(0));
 
   const pressLogin = () => {
-    navigation.navigate('home');
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, senha)
+      .then((userCredential) => {
+        setUsuario({ nome: userCredential.user.displayName, logado: true });
+      })
+      .catch((error) => alert(error.message));
+    
+    
   };
 
   const pressRemember = () => {
@@ -60,7 +69,7 @@ export default function Login({ navigation, logado }) {
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
-          onChangeText={() => {}}
+          onChangeText={(text) => setEmail(text)}
         />
         <Text style={ styles.textLogin }>Digite sua senha:</Text>
         <TextInput 
@@ -69,7 +78,7 @@ export default function Login({ navigation, logado }) {
           keyboardType="number-pad"
           secureTextEntry={true}
           autoCorrect={false}
-          onChangeText={() => {}}
+          onChangeText={(text) => setSenha(text)}
         />
         <TouchableOpacity 
           onPress={() => pressRemember()}
@@ -109,7 +118,7 @@ const styles = StyleSheet.create({
     height: 270,
     marginLeft: 'auto',
     marginRight: 'auto',
-    marginTop: 50
+    marginTop: 70
   },
   container: {
     flex: 1,
@@ -169,7 +178,7 @@ const styles = StyleSheet.create({
   textBottom: {
     position: 'absolute',
     flex:0.1,
-    left: 0,
+    left: -25,
     right: 0,
     bottom: -15,
     flexDirection:'row',
